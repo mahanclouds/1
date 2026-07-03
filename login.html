@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود به استریم‌شو</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .auth-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .auth-container input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 16px;
+        }
+        .auth-container input:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .auth-container button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(245,87,108,0.4);
+        }
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.6);
+        }
+        .auth-link a {
+            color: #f5576c;
+            text-decoration: none;
+        }
+        .error-msg {
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>🔐 ورود به حساب</h2>
+        <form id="loginForm" onsubmit="loginUser(event)">
+            <input type="text" id="loginUsername" placeholder="نام کاربری" required>
+            <input type="password" id="loginPassword" placeholder="رمز عبور" required>
+            <div id="loginError" class="error-msg"></div>
+            <button type="submit">ورود</button>
+        </form>
+        <div class="auth-link">
+            حساب ندارید؟ <a href="register.html">ثبت‌نام کنید</a>
+        </div>
+        <div class="auth-link">
+            <a href="index.html">🏠 بازگشت به صفحه اصلی</a>
+        </div>
+    </div>
+    <script src="auth.js"></script>
+</body>
+</html>
