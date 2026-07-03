@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پلتفرم استریم اشتراک‌گذاری ویدیو</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- هدر -->
+    <header>
+        <div class="header-left">
+            <h1>🎥 استریم‌شو</h1>
+            <span class="subtitle">پلتفرم اشتراک‌گذاری ویدیو</span>
+        </div>
+        <div class="header-right">
+            <span id="userStatus" class="user-status">⚠️ مهمان</span>
+            <button id="authButton" onclick="handleAuth()">ورود / ثبت‌نام</button>
+            <button id="dashboardButton" onclick="goToDashboard()" style="display:none;">📊 داشبورد</button>
+            <button id="logoutButton" onclick="logoutUser()" style="display:none;">🚪 خروج</button>
+        </div>
+    </header>
+
+    <!-- بخش جستجو و فیلتر -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="جستجوی ویدیو...">
+        <select id="categoryFilter">
+            <option value="all">همه دسته‌بندی‌ها</option>
+            <option value="آموزشی">آموزشی</option>
+            <option value="سرگرمی">سرگرمی</option>
+            <option value="گیمینگ">گیمینگ</option>
+            <option value="موسیقی">موسیقی</option>
+            <option value="ورزشی">ورزشی</option>
+            <option value="علمی">علمی</option>
+            <option value="سایر">سایر</option>
+        </select>
+    </div>
+
+    <!-- پیام خالی بودن -->
+    <div id="emptyMessage" class="empty-message">
+        <div class="empty-icon">📹</div>
+        <h2>هیچ ویدیویی آپلود نشده است!</h2>
+        <p>برای شروع، <a href="#" onclick="goToDashboard()">وارد داشبورد شوید</a> و اولین ویدیوی خود را آپلود کنید.</p>
+    </div>
+
+    <!-- شبکه ویدیوها -->
+    <main>
+        <div id="videoGrid" class="video-grid">
+            <!-- ویدیوها توسط جاوااسکریپت رندر می‌شوند -->
+        </div>
+    </main>
+
+    <!-- پنل پخش‌کننده -->
+    <div id="playerPanel" class="player-panel hidden">
+        <div class="player-container">
+            <button class="close-player" onclick="closePlayer()">✖</button>
+            <h2 id="videoTitle"></h2>
+            <div class="video-wrapper">
+                <video id="videoPlayer" controls>
+                    <source id="videoSource" src="" type="video/mp4">
+                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                </video>
+            </div>
+            <div class="player-info">
+                <p id="videoDescription"></p>
+                <div class="video-meta">
+                    <span id="videoUploader">👤 آپلود کننده: </span>
+                    <span id="videoCategory">📂 دسته: </span>
+                    <span id="videoDate">📅 تاریخ: </span>
+                    <span id="videoViews">👁️ بازدید: ۰</span>
+                </div>
+                <button onclick="likeVideo()" class="like-btn">❤️ پسندیدن (<span id="likeCount">۰</span>)</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
