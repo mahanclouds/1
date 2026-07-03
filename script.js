@@ -1,36 +1,28 @@
-// ========== منطق اصلی برنامه ==========
+// ========== منطق اصلی با IndexedDB ==========
 
 let videos = [];
 let currentVideoId = null;
-let currentUser = null;
 
-// ---------- بارگذاری ویدیوها ----------
-function loadVideos() {
-    // دریافت ویدیوهای همه کاربران
-    const users = JSON.parse(localStorage.getItem(AUTH_KEY) || '[]');
-    let allVideos = [];
-    
-    users.forEach(user => {
-        if (user.videos && user.videos.length > 0) {
-            user.videos.forEach(video => {
-                allVideos.push({
-                    ...video,
-                    uploader: user.username,
-                    uploaderFullName: user.fullName || user.username
-                });
-            });
+// ---------- بارگذاری ویدیوها از IndexedDB ----------
+async function loadVideos() {
+    try {
+        const db = await openDB();
+        const allVideos = await getAllVideosFromDB();
+        
+        videos = allVideos.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+        
+        if (videos.length === 0) {
+            document.getElementById('emptyMessage').style.display = 'block';
+            document.getElementById('videoGrid').style.display = 'none';
+        } else {
+            document.getElementById('emptyMessage').style.display = 'none';
+            document.getElementById('videoGrid').style.display = 'grid';
+            renderVideos(videos);
         }
-    });
-    
-    videos = allVideos;
-    
-    if (videos.length === 0) {
+    } catch (error) {
+        console.error('خطا در بارگذاری ویدیوها:', error);
         document.getElementById('emptyMessage').style.display = 'block';
         document.getElementById('videoGrid').style.display = 'none';
-    } else {
-        document.getElementById('emptyMessage').style.display = 'none';
-        document.getElementById('videoGrid').style.display = 'grid';
-        renderVideos(videos);
     }
 }
 
@@ -50,12 +42,12 @@ function renderVideos(videoList) {
         card.innerHTML = `
             <div class="thumbnail">
                 <span class="play-icon">▶️</span>
-                ${video.thumbnail ? `<img src="${video.thumbnail}" style="width:100%;height:100%;object-fit:cover;">` : ''}
+                ${video.thumbnail ? `<img src="${video.thumbnail}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">` : ''}
                 <span class="video-duration">${video.duration || '۰۰:۰۰'}</span>
             </div>
             <div class="video-info">
                 <h3>${video.title}</h3>
-                <p style="font-size:13px;color:rgba(255,255,255,0.5);">${video.uploaderFullName}</p>
+                <p style="font-size:13px;color:rgba(255,255,255,0.5);">${video.uploaderName || 'کاربر ناشناس'}</p>
                 <div class="meta">
                     <span class="category-tag">${video.category || 'سایر'}</span>
                     <span>👁️ ${video.views || ۰}</span>
@@ -76,7 +68,7 @@ function openPlayer(videoId) {
     
     document.getElementById('videoTitle').textContent = video.title;
     document.getElementById('videoDescription').textContent = video.description || 'بدون توضیحات';
-    document.getElementById('videoUploader').textContent = `👤 آپلود کننده: ${video.uploaderFullName}`;
+    document.getElementById('videoUploader').textContent = `👤 آپلود کننده: ${video.uploaderName || 'کاربر ناشناس'}`;
     document.getElementById('videoCategory').textContent = `📂 دسته: ${video.category || 'سایر'}`;
     document.getElementById('videoDate').textContent = `📅 تاریخ: ${new Date(video.uploadDate).toLocaleDateString('fa-IR')}`;
     document.getElementById('videoViews').textContent = `👁️ بازدید: ${video.views || ۰}`;
@@ -85,18 +77,19 @@ function openPlayer(videoId) {
     // بررسی اینکه کاربر قبلاً لایک کرده یا نه
     const currentUser = getCurrentUser();
     if (currentUser) {
-        const fullUser = getFullUser();
-        if (fullUser && fullUser.likedVideos && fullUser.likedVideos.includes(videoId)) {
-            document.querySelector('.like-btn').classList.add('liked');
-        } else {
-            document.querySelector('.like-btn').classList.remove('liked');
-        }
+        const user = getUserFromDB(currentUser.userId);
+        user.then(u => {
+            if (u && u.likedVideos && u.likedVideos.includes(videoId)) {
+                document.querySelector('.like-btn').classList.add('liked');
+            } else {
+                document.querySelector('.like-btn').classList.remove('liked');
+            }
+        });
     }
     
-    // تنظیم ویدیو (از داده‌های ذخیره شده یا نمونه)
+    // تنظیم ویدیو
     const videoSource = document.getElementById('videoSource');
     if (video.videoData) {
-        // اگر ویدیو به صورت Base64 ذخیره شده (برای دمو)
         videoSource.src = video.videoData;
     } else {
         // ویدیوی نمونه برای تست
@@ -113,26 +106,31 @@ function openPlayer(videoId) {
 }
 
 // ---------- افزایش بازدید ----------
-function incrementView(videoId) {
-    const users = JSON.parse(localStorage.getItem(AUTH_KEY) || '[]');
-    let updated = false;
-    
-    users.forEach(user => {
-        if (user.videos) {
-            user.videos.forEach(video => {
-                if (video.id === videoId) {
-                    video.views = (video.views || ۰) + 1;
-                    updated = true;
-                }
-            });
+async function incrementView(videoId) {
+    try {
+        const video = await getVideoFromDB(videoId);
+        if (video) {
+            video.views = (video.views || ۰) + 1;
+            await saveVideoToDB(video);
+            
+            // بروزرسانی لیست
+            await loadVideos();
         }
-    });
-    
-    if (updated) {
-        localStorage.setItem(AUTH_KEY, JSON.stringify(users));
-        // بروزرسانی نمایش
-        loadVideos();
+    } catch (error) {
+        console.error('خطا در افزایش بازدید:', error);
     }
+}
+
+// ---------- دریافت ویدیو از دیتابیس ----------
+async function getVideoFromDB(videoId) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['videos'], 'readonly');
+        const store = transaction.objectStore('videos');
+        const request = store.get(videoId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
 }
 
 // ---------- بستن پخش‌کننده ----------
@@ -143,7 +141,7 @@ function closePlayer() {
 }
 
 // ---------- لایک کردن ----------
-function likeVideo() {
+async function likeVideo() {
     if (!currentVideoId) return;
     
     const session = getCurrentUser();
@@ -152,47 +150,36 @@ function likeVideo() {
         return;
     }
     
-    const users = JSON.parse(localStorage.getItem(AUTH_KEY) || '[]');
-    const userIndex = users.findIndex(u => u.id === session.userId);
-    if (userIndex === -1) return;
-    
-    const user = users[userIndex];
-    if (!user.likedVideos) user.likedVideos = [];
-    
-    const alreadyLiked = user.likedVideos.includes(currentVideoId);
-    const likeBtn = document.querySelector('.like-btn');
-    
-    // پیدا کردن ویدیو در تمام کاربران
-    let videoFound = false;
-    users.forEach(u => {
-        if (u.videos) {
-            u.videos.forEach(v => {
-                if (v.id === currentVideoId) {
-                    if (!alreadyLiked) {
-                        v.likes = (v.likes || ۰) + 1;
-                        user.likedVideos.push(currentVideoId);
-                        likeBtn.classList.add('liked');
-                        videoFound = true;
-                    } else {
-                        v.likes = Math.max((v.likes || ۰) - 1, 0);
-                        user.likedVideos = user.likedVideos.filter(id => id !== currentVideoId);
-                        likeBtn.classList.remove('liked');
-                        videoFound = true;
-                    }
-                }
-            });
+    try {
+        const video = await getVideoFromDB(currentVideoId);
+        if (!video) return;
+        
+        const user = await getUserFromDB(session.userId);
+        if (!user) return;
+        
+        if (!user.likedVideos) user.likedVideos = [];
+        const alreadyLiked = user.likedVideos.includes(currentVideoId);
+        const likeBtn = document.querySelector('.like-btn');
+        
+        if (!alreadyLiked) {
+            video.likes = (video.likes || ۰) + 1;
+            user.likedVideos.push(currentVideoId);
+            likeBtn.classList.add('liked');
+        } else {
+            video.likes = Math.max((video.likes || ۰) - 1, 0);
+            user.likedVideos = user.likedVideos.filter(id => id !== currentVideoId);
+            likeBtn.classList.remove('liked');
         }
-    });
-    
-    if (videoFound) {
-        localStorage.setItem(AUTH_KEY, JSON.stringify(users));
-        // بروزرسانی نمایش لایک
-        const video = videos.find(v => v.id === currentVideoId);
-        if (video) {
-            document.getElementById('likeCount').textContent = video.likes || ۰;
-            // بروزرسانی در لیست اصلی
-            loadVideos();
-        }
+        
+        await saveVideoToDB(video);
+        await saveUserToDB(user);
+        
+        document.getElementById('likeCount').textContent = video.likes || ۰;
+        await loadVideos();
+        
+    } catch (error) {
+        console.error('خطا در لایک:', error);
+        alert('❌ خطا در ثبت لایک');
     }
 }
 
@@ -204,7 +191,7 @@ function filterVideos() {
     const filtered = videos.filter(video => {
         const matchSearch = video.title.includes(searchText) ||
                            (video.description && video.description.includes(searchText)) ||
-                           video.uploaderFullName.includes(searchText);
+                           (video.uploaderName && video.uploaderName.includes(searchText));
         const matchCategory = category === 'all' || video.category === category;
         return matchSearch && matchCategory;
     });
