@@ -1,0 +1,212 @@
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* بخش آپلود */
+.upload-section {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.upload-section h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+}
+
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none;
+    border-color: #f5576c;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-group input[type="file"] {
+    padding: 8px;
+    background: rgba(255,255,255,0.05);
+}
+
+/* نوار پیشرفت آپلود */
+.upload-progress {
+    margin: 15px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(45deg, #f093fb, #f5576c);
+    transition: width 0.3s;
+    border-radius: 10px;
+}
+
+#progressText {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    display: block;
+    margin-top: 5px;
+}
+
+.upload-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(45deg, #f093fb, #f5576c);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.upload-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 25px rgba(245,87,108,0.4);
+}
+
+/* لیست ویدیوهای من */
+.my-videos-section {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.my-videos-section h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.my-videos-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.my-video-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s;
+}
+
+.my-video-item:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.my-video-item .video-name {
+    font-weight: 500;
+}
+
+.my-video-item .video-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.my-video-item .video-actions button {
+    padding: 4px 12px;
+    font-size: 12px;
+}
+
+.delete-btn {
+    background: rgba(255,0,0,0.2) !important;
+    border: 1px solid rgba(255,0,0,0.3) !important;
+}
+
+.delete-btn:hover {
+    background: rgba(255,0,0,0.3) !important;
+    box-shadow: 0 3px 15px rgba(255,0,0,0.2) !important;
+}
+
+/* آمار */
+.stats-section {
+    grid-column: 1 / -1;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.stats-section h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #f093fb, #f5576c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+    display: block;
+    margin-top: 5px;
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+}
