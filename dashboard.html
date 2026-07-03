@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد مدیریت</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+    <!-- هدر داشبورد -->
+    <header>
+        <h1>📊 داشبورد مدیریت</h1>
+        <div>
+            <span id="dashboardUser">کاربر</span>
+            <button onclick="goToHome()">🏠 صفحه اصلی</button>
+            <button onclick="logoutUser()">🚪 خروج</button>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- بخش آپلود -->
+        <div class="upload-section">
+            <h2>📤 آپلود ویدیو جدید</h2>
+            <form id="uploadForm" onsubmit="uploadVideo(event)">
+                <div class="form-group">
+                    <label>عنوان ویدیو</label>
+                    <input type="text" id="videoTitleInput" placeholder="عنوان ویدیو" required>
+                </div>
+                <div class="form-group">
+                    <label>توضیحات</label>
+                    <textarea id="videoDescriptionInput" placeholder="توضیحات ویدیو" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>دسته‌بندی</label>
+                    <select id="videoCategoryInput">
+                        <option value="آموزشی">آموزشی</option>
+                        <option value="سرگرمی">سرگرمی</option>
+                        <option value="گیمینگ">گیمینگ</option>
+                        <option value="موسیقی">موسیقی</option>
+                        <option value="ورزشی">ورزشی</option>
+                        <option value="علمی">علمی</option>
+                        <option value="سایر">سایر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>انتخاب فایل ویدیو (MP4)</label>
+                    <input type="file" id="videoFileInput" accept=".mp4,.webm,.ogg" required>
+                </div>
+                <div class="form-group">
+                    <label>تصویر بندانگشتی</label>
+                    <input type="file" id="thumbnailInput" accept=".jpg,.jpeg,.png">
+                </div>
+                <div class="upload-progress" id="uploadProgress" style="display:none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                    </div>
+                    <span id="progressText">۰%</span>
+                </div>
+                <button type="submit" class="upload-btn">🚀 آپلود ویدیو</button>
+            </form>
+        </div>
+
+        <!-- لیست ویدیوهای من -->
+        <div class="my-videos-section">
+            <h2>🎬 ویدیوهای من</h2>
+            <div id="myVideosList" class="my-videos-list">
+                <!-- ویدیوهای کاربر -->
+            </div>
+        </div>
+
+        <!-- آمار -->
+        <div class="stats-section">
+            <h2>📈 آمار</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalVideos">۰</span>
+                    <span class="stat-label">کل ویدیوها</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalViews">۰</span>
+                    <span class="stat-label">کل بازدیدها</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalLikes">۰</span>
+                    <span class="stat-label">کل پسندها</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
